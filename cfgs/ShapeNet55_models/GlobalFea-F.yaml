@@ -23,20 +23,23 @@ bnmscheduler: {
 }}
 
 dataset : {
-  train : { _base_: cfgs/dataset_configs/PCNCars.yaml,
+  train : { _base_: cfgs/dataset_configs/ShapeNet-55.yaml,
             others: {subset: 'train'}},
-  val : { _base_: cfgs/dataset_configs/PCNCars.yaml,
+  val : { _base_: cfgs/dataset_configs/ShapeNet-55.yaml,
             others: {subset: 'test'}},
-  test : { _base_: cfgs/dataset_configs/KITTI.yaml,
+  test : { _base_: cfgs/dataset_configs/ShapeNet-55.yaml,
             others: {subset: 'test'}}}
 
+
 model : {
-  NAME: GeoAware,
-  num_group: 64,
+  NAME: GlobalFea,
   num_query: 512,
-  num_points: 16384,
-  center_num: [64, 256],
+  num_points: 8192,
+  center_num: [512, 256],
   global_feature_dim: 1024,
+  encoder_type: graph,
+  decoder_type: fc,
+  order: ["xyz", "xzy", "yxz", "yzx", "zxy", "zyx", "hilbert",  "z", "z-trans"],
   encoder_config: {
     embed_dim: 384,
     depth: 6,
@@ -44,7 +47,7 @@ model : {
     k: 8,
     n_group: 2,
     mlp_ratio: 2.,
-    block_style_list: [ 'attn-graph', 'attn', 'attn', 'attn', 'attn', 'attn' ],
+    block_style_list: [ 'attn-graph', 'channel_attn', 'channel_attn', 'channel_attn', 'attn', 'attn' ],
     combine_style: 'concat',
   },
   decoder_config: {
@@ -61,8 +64,8 @@ model : {
   }
   }
 
-total_bs : 16
+total_bs : 48
 step_per_update : 1
-max_epoch : 400
+max_epoch : 600
 
-consider_metric: CDL1
+consider_metric: CDL2
